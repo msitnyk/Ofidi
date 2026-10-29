@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#176b55">
+  <meta name="description" content="Directorio comunitario de oficios y servicios de Los Sauces.">
+  <title>Oficios de Los Sauces</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./config.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#inicio" aria-label="Oficios de Los Sauces, inicio">
+        <span class="brand-mark" aria-hidden="true">O</span>
+        <span><strong>Oficios</strong><small>Los Sauces · La Plata</small></span>
+      </a>
+      <div class="header-actions">
+        <button id="theme-toggle" class="button button-light theme-toggle" type="button" aria-pressed="false" aria-label="Cambiar a modo oscuro" title="Cambiar a modo oscuro">◐ <span>Modo oscuro</span></button>
+        <button id="google-login" class="button button-light" type="button">Ingresar con Google</button>
+      </div>
+      <div id="session-controls" class="session-controls" hidden>
+        <span id="session-label" class="session-label"></span>
+        <button id="logout" class="button button-light" type="button">Salir</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="inicio" class="page-shell">
+    <section class="hero" aria-labelledby="page-title">
+      <p class="eyebrow">Directorio comunitario</p>
+      <h1 id="page-title">Encontrá un oficio cerca</h1>
+      <p>Buscá referencias del barrio sin rebuscar en el historial de WhatsApp.</p>
+      <p class="trust-note">Los datos y opiniones son aportes vecinales; OFIDI no verifica a los profesionales.</p>
+    </section>
+
+    <section id="system-notice" class="notice" role="status" hidden></section>
+
+    <section id="access-panel" class="access-panel" aria-labelledby="access-title" hidden>
+      <div>
+        <p class="eyebrow">Acceso al barrio</p>
+        <h2 id="access-title">Un paso para ver teléfonos y participar</h2>
+        <p id="access-description">Ingresá con Google y usá el código de invitación de Los Sauces. La búsqueda y las fichas básicas son abiertas.</p>
+      </div>
+      <button id="access-google-login" class="button button-primary" type="button">Ingresar con Google</button>
+      <form id="invite-form" class="invite-form" hidden>
+        <label for="invite-code">Código de invitación</label>
+        <div class="inline-form">
+          <input id="invite-code" name="code" autocomplete="one-time-code" required>
+          <button class="button button-primary" type="submit">Validar código</button>
+        </div>
+        <p id="invite-message" class="form-message" role="status"></p>
+      </form>
+    </section>
+
+    <nav class="quick-links" aria-label="Acciones del directorio">
+      <a href="#buscar">Buscar profesionales</a>
+      <a href="#aportar">＋ Agregar profesional</a>
+      <a href="#reportar">Reportar un dato</a>
+    </nav>
+
+    <section id="buscar" class="panel" aria-labelledby="search-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Explorá el directorio</p>
+          <h2 id="search-title">¿Qué necesitás resolver?</h2>
+        </div>
+        <span id="result-count" class="result-count" aria-live="polite"></span>
+      </div>
+      <label class="search-label" for="search-input">Oficio, servicio o nombre</label>
+      <input id="search-input" class="search-input" type="search" placeholder="Ej.: plomero, pileta, Modesto" autocomplete="off">
+      <div id="category-chips" class="category-chips" aria-label="Filtrar por categoría"></div>
+      <div id="provider-list" class="provider-list" aria-live="polite">
+        <p class="muted">Cargando profesionales…</p>
+      </div>
+    </section>
+
+    <section id="aportar" class="panel" aria-labelledby="contribute-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Sumá una referencia</p>
+          <h2 id="contribute-title">¿Conocés a alguien para recomendar?</h2>
+        </div>
+      </div>
+      <p class="muted">Cualquier vecino con acceso puede aportar. La ficha se publica de inmediato como aporte de la comunidad.</p>
+      <form id="contribution-form" class="form-grid">
+        <label>Nombre o comercio
+          <input name="name" required maxlength="160" autocomplete="organization">
+        </label>
+        <label>Celular argentino
+          <input name="phone" type="tel" inputmode="tel" placeholder="+54 9 221 000-0000" required>
+        </label>
+        <label for="provider-category">Oficio o rubro
+          <select id="provider-category" name="category" required>
+            <option value="__other__">+ Otro rubro...</option>
+          </select>
+        </label>
+        <label id="suggested-category-field" hidden>¿Qué rubro sugerís?
+          <input id="suggested-category" name="suggestedCategory" maxlength="80" placeholder="Ej.: Fumigación">
+        </label>
+        <label class="full-width">¿Por qué lo recomendás?
+          <textarea name="reason" required maxlength="1000" rows="3" placeholder="Contá brevemente tu experiencia o referencia"></textarea>
+        </label>
+        <label>Estrellas (opcional)
+          <select name="rating">
+            <option value="">Sin puntaje</option>
+            <option value="5">★★★★★ · 5</option>
+            <option value="4">★★★★☆ · 4</option>
+            <option value="3">★★★☆☆ · 3</option>
+            <option value="2">★★☆☆☆ · 2</option>
+            <option value="1">★☆☆☆☆ · 1</option>
+          </select>
+        </label>
+        <label class="check-row"><input name="showName" type="checkbox"> Mostrar mi nombre junto al aporte</label>
+        <label class="check-row full-width"><input name="canShare" type="checkbox" required> Confirmo que tengo permiso para compartir este teléfono en el directorio.</label>
+        <button class="button button-primary full-width" type="submit">Publicar aporte</button>
+        <p id="contribution-message" class="form-message full-width" role="status"></p>
+      </form>
+    </section>
+
+    <section id="reportar" class="panel" aria-labelledby="report-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Ayudanos a mantenerlo útil</p>
+          <h2 id="report-title">Reportar un dato o una experiencia</h2>
+        </div>
+      </div>
+      <p class="muted">El reporte crea un ticket para revisión. No oculta la ficha automáticamente; el administrador decide qué hacer.</p>
+      <form id="report-form" class="form-grid">
+        <label>Profesional
+          <select id="report-provider" name="providerId" required></select>
+        </label>
+        <label>Motivo
+          <select name="reason" required>
+            <option value="">Elegí una opción</option>
+            <option>Teléfono o dato incorrecto</option>
+            <option>El profesional ya no ofrece el servicio</option>
+            <option>Experiencia para revisar</option>
+            <option>Otro</option>
+          </select>
+        </label>
+        <label class="full-width">Detalle (opcional)
+          <textarea name="details" maxlength="2000" rows="3"></textarea>
+        </label>
+        <button class="button button-secondary full-width" type="submit">Enviar reporte</button>
+        <p id="report-message" class="form-message full-width" role="status"></p>
+      </form>
+    </section>
+
+    <section id="admin-panel" class="panel" aria-labelledby="admin-title" hidden>
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Solo administración</p>
+          <h2 id="admin-title">Reportes pendientes</h2>
+        </div>
+        <button id="refresh-admin" class="button button-light" type="button">Actualizar</button>
+      </div>
+      <p id="admin-metrics" class="metrics-summary" aria-live="polite"></p>
+      <h3 class="admin-subtitle">Reportes pendientes</h3>
+      <div id="admin-report-pending" class="provider-list"></div>
+      <h3 class="admin-subtitle">Historial de reportes</h3>
+      <div id="admin-report-history" class="provider-list"></div>
+      <h3 class="admin-subtitle">Rubros sugeridos</h3>
+      <p class="muted">Aprobar incorpora el rubro a las opciones oficiales y actualiza la ficha publicada.</p>
+      <div id="admin-category-suggestions" class="provider-list"></div>
+      <h3 class="admin-subtitle">Profesionales dados de baja</h3>
+      <p class="muted">Estas fichas no se muestran al barrio. Podés restaurarlas si una baja fue incorrecta.</p>
+      <div id="admin-disabled-providers" class="provider-list"></div>
+    </section>
+
+    <footer class="site-footer">
+      <p>OFIDI · Piloto comunitario de Los Sauces</p>
+      <p>Contactar abre WhatsApp; no confirma una conversación ni un trabajo realizado.</p>
+    </footer>
+  </main>
+
+  <dialog id="provider-dialog" class="provider-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-content">
+      <button id="close-dialog" class="dialog-close" type="button" aria-label="Cerrar ficha">×</button>
+      <p class="eyebrow">Ficha comunitaria · Aporte de la comunidad</p>
+      <h2 id="dialog-title"></h2>
+      <p id="dialog-category" class="provider-category"></p>
+      <p id="dialog-rating" class="rating-summary"></p>
+      <div id="dialog-recommendations" class="recommendations-list"></div>
+      <section class="review-composer" aria-labelledby="review-title">
+        <h3 id="review-title">Dejar una opinión sobre este profesional</h3>
+        <p class="muted">Podés dejar estrellas, un comentario o ambos. Es una opinión vecinal, no una verificación de OFIDI.</p>
+        <div id="review-access" class="review-access" hidden>
+          <p id="review-access-message" class="muted"></p>
+          <button id="review-access-button" class="button button-primary" type="button"></button>
+        </div>
+        <form id="review-form" class="form-grid" hidden>
+          <label>Estrellas (opcional)
+            <select name="rating">
+              <option value="">Sin puntaje</option>
+              <option value="5">★★★★★ · 5</option>
+              <option value="4">★★★★☆ · 4</option>
+              <option value="3">★★★☆☆ · 3</option>
+              <option value="2">★★☆☆☆ · 2</option>
+              <option value="1">★☆☆☆☆ · 1</option>
+            </select>
+          </label>
+          <label class="check-row"> <input name="showName" type="checkbox"> Mostrar mi nombre</label>
+          <label class="full-width">Comentario (opcional)
+            <textarea name="reason" maxlength="1000" rows="3" placeholder="Compartí una experiencia real con este profesional"></textarea>
+          </label>
+          <button class="button button-primary full-width" type="submit">Publicar opinión</button>
+          <p id="review-message" class="form-message full-width" role="status"></p>
+        </form>
+      </section>
+      <div id="dialog-contact" class="contact-area"></div>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+  <script type="module" src="./src/main.mjs"></script>
+</body>
+</html>

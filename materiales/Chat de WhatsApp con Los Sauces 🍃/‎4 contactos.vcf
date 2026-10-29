@@ -1,0 +1,18 @@
+BEGIN:VCARD
+VERSION:3.0
+N:La Estrella;Atmosferico;;;
+FN:Atmosferico La Estrella
+TEL:+54 9 2214 25-2825
+END:VCARDBEGIN:VCARD
+VERSION:3.0
+N:Tr;Atmosferico Pozo La;;;
+FN:Atmosferico Pozo La Tr
+item1.TEL:+54 9 2214 25-2825
+item1.X-ABLabel:Móvil
+END:VCARDBEGIN:VCARD
+VERSION:3.0
+N:Tr;Atmosferico Pozo La;;;
+FN:Atmosferico Pozo La Tr
+item2.TEL:+54 9 2214 25-2825
+item2.X-ABLabel:Móvil
+END:VCARD

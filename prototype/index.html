@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Oficios de Los Sauces - Prototipo</title>
+  <!--
+    PROTOTIPO DE DESCUBRIMIENTO: directorio local de oficios para Los Sauces.
+    Concepto: ayudar a vecinos a buscar profesionales sin rebuscar en el historial de WhatsApp.
+    Recorrido principal: buscar oficio -> revisar ficha -> abrir WhatsApp.
+    Recorrido alternativo: sugerir profesional -> revisar duplicados -> publicar solo con consentimiento.
+    Pantallas: #buscar, #resultados, #perfil, #sin-resultados, #sugerir,
+    #error-sugerencia y #sugerencia-enviada.
+    El responsable del proyecto confirmó el permiso para usar los teléfonos de estos tres perfiles en la demo piloto; revalidar antes de publicación amplia.
+    Fidelidad: visual baja por ser una hipótesis temprana; contenido medio basado en el proyecto;
+    interacción media para probar los recorridos principales.
+    Este archivo es una maqueta clickeable, no software de producción. Ver README.md para
+    trazabilidad y supuestos.
+  -->
+  <style>
+    /* Tokens verdes iniciales; ajustar con vecinos antes de adoptar como identidad final. */
+    :root {
+      --color-bg: #f5f7f6;
+      --color-surface: #ffffff;
+      --color-text: #202823;
+      --color-muted: #59665f;
+      --color-primary: #176b55;
+      --color-primary-ink: #ffffff;
+      --color-soft: #e7f2ed;
+      --color-border: #d5dfd9;
+      --color-success: #176b55;
+      --color-warning: #805900;
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 1rem;
+      --space-4: 1.5rem;
+      --space-5: 2.5rem;
+      --radius: 0.75rem;
+      --radius-pill: 999px;
+      --border-width: 1px;
+      --focus-width: 3px;
+      --content-width: 68rem;
+      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --type-h1: 700 1.6rem/1.2 var(--font);
+      --type-h2: 650 1.15rem/1.3 var(--font);
+      --type-body: 400 1rem/1.5 var(--font);
+      --type-small: 400 0.875rem/1.4 var(--font);
+      --type-label: 650 0.9rem/1.4 var(--font);
+      --shadow: 0 0.15rem 0.5rem rgba(32, 40, 35, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font: var(--type-body);
+    }
+    a { color: var(--color-primary); }
+    :focus-visible {
+      outline: var(--focus-width) solid var(--color-primary);
+      outline-offset: var(--space-1);
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-surface);
+      border-bottom: var(--border-width) solid var(--color-border);
+    }
+    .brand { font-weight: 750; letter-spacing: -0.02em; }
+    nav { margin-left: auto; display: flex; gap: var(--space-2); }
+    nav a {
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius);
+      color: var(--color-muted);
+      text-decoration: none;
+      font: var(--type-small);
+    }
+    nav a[aria-current="page"] { color: var(--color-primary); background: var(--color-soft); }
+    main { max-width: var(--content-width); margin: var(--space-5) auto; padding: 0 var(--space-4); }
+    .screen[hidden] { display: none; }
+    .card {
+      background: var(--color-surface);
+      border: var(--border-width) solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: var(--space-4);
+    }
+    h1 { margin: 0 0 var(--space-3); font: var(--type-h1); }
+    h2 { margin: 0 0 var(--space-2); font: var(--type-h2); }
+    p { margin: 0 0 var(--space-3); }
+    .muted { color: var(--color-muted); }
+    .eyebrow { color: var(--color-primary); font: var(--type-label); text-transform: uppercase; letter-spacing: 0.04em; }
+    .stack { display: grid; gap: var(--space-3); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: var(--space-3); }
+    label { display: block; margin: var(--space-3) 0 var(--space-1); font: var(--type-label); }
+    input, select, textarea {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      border: var(--border-width) solid var(--color-border);
+      border-radius: var(--radius);
+      background: var(--color-surface);
+      color: var(--color-text);
+      font: var(--type-body);
+    }
+    textarea { min-height: 6rem; resize: vertical; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+      padding: var(--space-2) var(--space-4);
+      border: var(--border-width) solid var(--color-primary);
+      border-radius: var(--radius);
+      background: var(--color-primary);
+      color: var(--color-primary-ink);
+      font: var(--type-label);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .btn.secondary { background: var(--color-surface); color: var(--color-primary); }
+    .pill {
+      display: inline-block;
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-pill);
+      background: var(--color-soft);
+      color: var(--color-primary);
+      font: var(--type-small);
+    }
+    .notice {
+      padding: var(--space-3);
+      border-left: var(--border-width) solid var(--color-primary);
+      background: var(--color-soft);
+      border-radius: var(--radius);
+    }
+    .notice.warning { color: var(--color-warning); }
+    .check-row { display: flex; align-items: flex-start; gap: var(--space-2); margin-top: var(--space-3); }
+    .check-row input { width: auto; margin-top: var(--space-1); }
+    .check-row label { margin: 0; font: var(--type-body); }
+    .profile { display: grid; gap: var(--space-3); }
+    .profile-meta { display: grid; gap: var(--space-2); }
+    .profile-meta div { padding-bottom: var(--space-2); border-bottom: var(--border-width) solid var(--color-border); }
+    .actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+    .screen-heading { margin-bottom: var(--space-4); }
+    .screen-heading p { max-width: 48rem; }
+    .error { color: var(--color-warning); font-weight: 650; }
+    .success { color: var(--color-success); font-weight: 700; }
+    footer { max-width: var(--content-width); margin: 0 auto var(--space-5); padding: 0 var(--space-4); color: var(--color-muted); font: var(--type-small); }
+    @media (max-width: 40rem) {
+      header { align-items: flex-start; flex-wrap: wrap; }
+      nav { margin-left: 0; width: 100%; }
+      main { margin-top: var(--space-4); padding: 0 var(--space-3); }
+      .card { padding: var(--space-3); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand" aria-label="Oficios Los Sauces">Los Sauces <span class="muted">/ oficios</span></div>
+    <nav aria-label="Navegación principal">
+      <a href="#buscar">Buscar</a>
+      <a href="#acceso-google">Agregar profesional</a>
+    </nav>
+  </header>
+
+  <main>
+    <!--
+      SCREEN #buscar. Purpose: start a local search. Primary action: choose a service and search.
+      Reached from: entry/default route or main navigation. Goes to #resultados or #sin-resultados.
+      Journey: need a service -> search locally. JTBD: find a recommended Los Sauces provider
+      without scrolling through the WhatsApp history. ASSUMPTION: residents start with a service category.
+      States: default. SPEC: initial pilot scope is Los Sauces; do not imply coverage beyond provider data.
+    -->
+    <section id="buscar" class="screen" aria-labelledby="buscar-h">
+      <div class="screen-heading">
+        <p class="eyebrow">Piloto del barrio</p>
+        <h1 id="buscar-h" tabindex="-1">Encontrá un oficio sin buscar en el chat</h1>
+        <p class="muted">Buscá por servicio y revisá la recomendación, la zona y la disponibilidad antes de contactar.</p>
+      </div>
+      <div class="card">
+        <h2>¿Qué necesitás resolver?</h2>
+        <!-- SAMPLE: categories come from the Los Sauces WhatsApp archive and project conversations; inventory is not yet revalidated. -->
+        <form id="search-form" novalidate>
+          <label for="service">Oficio o servicio</label>
+          <select id="service" name="service">
+            <option value="jardineria">Jardinería, poda o corte de pasto</option>
+            <option value="cerrajeria">Cerrajería</option>
+            <option value="electricidad">Electricidad</option>
+            <option value="bombas">Bombas de agua</option>
+            <option value="plomeria-piletas">Plomería y piletas</option>
+            <option value="volquetes">Volquetes</option>
+            <option value="atmosfericos">Camión atmosférico</option>
+            <option value="contenedores">Contenedores</option>
+            <option value="carwash">Car wash</option>
+            <option value="otro">Otro</option>
+          </select>
+          <label for="area">Zona</label>
+          <!-- SAMPLE: Los Sauces is the chosen pilot neighborhood; individual professional coverage must be confirmed. -->
+          <input id="area" name="area" value="Los Sauces" autocomplete="address-level3" readonly>
+          <label for="name-query">Buscar también por nombre o alias (opcional)</label>
+          <!-- SPEC: aliases such as Teófilo / Modesto point to one canonical profile after phone normalization and manual conflict review. -->
+          <input id="name-query" name="name-query" placeholder="Ej.: Modesto">
+          <!-- SPEC: categories with a loaded profile show it; unseeded categories show an honest empty state. This prototype does not query a database. -->
+          <div class="actions">
+            <button class="btn" type="submit">Buscar</button>
+            <!-- SPEC: keep the contribution path beside search so residents can add a provider without hunting for it. -->
+            <a class="btn secondary" href="#acceso-google">Agregar profesional</a>
+          </div>
+        </form>
+        <p class="muted">Las fichas se cargaron para probar el recorrido. Cobertura, vigencia y permiso de publicación deben confirmarse.</p>
+      </div>
+    </section>
+
+    <!--
+      SCREEN #resultados. Purpose: show real profiles supplied by the project owner for pilot testing.
+      Reached from: #buscar. Goes to #perfil.
+      SPEC: show equivalent cards without paid ranking. Coverage and availability are attributed to the provider/project owner and may need refresh.
+      ASSUMPTION: one canonical Teófilo Modesto profile is found by either Teófilo or Modesto; phone normalization and alias review prevent duplicates.
+      PRIVACY: phone numbers were supplied for these public-profile drafts; confirm each provider's permission before sharing the demo. Contactar opens WhatsApp.
+    -->
+    <section id="resultados" class="screen" hidden aria-labelledby="resultados-h">
+      <div class="screen-heading">
+        <p class="eyebrow">Perfiles cargados para la prueba</p>
+        <h1 id="resultados-h" tabindex="-1">Profesionales en Los Sauces</h1>
+        <p id="results-summary" class="muted">Datos aportados para la demo; confirmar cobertura y vigencia.</p>
+      </div>
+      <div class="notice">¿No aparece quien buscás? <a href="#acceso-google">Agregá un profesional al directorio</a>. La sugerencia se revisa antes de publicarse.</div>
+      <div id="results-list" class="grid" aria-live="polite"></div>
+      <p class="notice">La recomendación de un vecino no equivale a una reseña de un trabajo. El teléfono está disponible para esta prueba; el clic no confirma conversación ni trabajo.</p>
+      <div class="actions"><a class="btn secondary" href="#buscar">Cambiar búsqueda</a><a class="btn secondary" href="#acceso-google">Agregar profesional</a></div>
+    </section>
+
+    <!--
+      SCREEN #perfil. Purpose: compare fit and recommendation source. Primary action: initiate contact.
+      Reached from: a result card. Goes to #contacto-iniciado.
+      SPEC: show services, reported coverage, reported availability and recommendation source separately from reviews.
+      SOURCE: profile facts below were supplied by the project owner. Contact numbers are kept out of this demo.
+      ASSUMPTION: name aliases help search but resolve to one canonical profile when phone normalization confirms a match.
+    -->
+    <section id="perfil" class="screen" hidden aria-labelledby="perfil-h">
+      <div class="screen-heading">
+        <p class="eyebrow">Ficha para revisar</p>
+        <h1 id="perfil-h" tabindex="-1">Teófilo Modesto</h1>
+        <p id="profile-summary" class="muted">Datos cargados desde la ficha compartida para el piloto.</p>
+      </div>
+      <article class="card profile">
+        <div class="profile-meta">
+          <div><strong>Trabajos</strong><br><span id="profile-service">Jardinería</span></div>
+          <div><strong>Zonas informadas</strong><br><span id="profile-coverage">Gorina y City Bell</span></div>
+          <div><strong>Disponibilidad informada</strong><br><span id="profile-availability">Todos los días</span></div>
+          <div><strong>WhatsApp</strong><br><span id="profile-phone">+54 9 221 536-9137</span></div>
+          <div><strong>Otros nombres de búsqueda</strong><br><span id="profile-aliases">Modesto</span></div>
+          <div><strong>Recomendación</strong><br><span id="profile-reference">Martín: muy recomendable</span></div>
+          <div><strong>Reseñas de trabajos</strong><br><span id="profile-reviews">Sin reseñas de trabajos registradas</span></div>
+        </div>
+        <div class="notice">La recomendación del barrio y una reseña posterior a un trabajo son señales distintas.</div>
+        <!-- SPEC: open the phone listed on this community profile via WhatsApp; the pilot measures the click, not the conversation or job. -->
+        <div class="actions">
+          <a class="btn" id="contact-link" href="https://wa.me/5492215369137" target="_blank" rel="noopener noreferrer">Contactar por WhatsApp</a>
+          <a class="btn secondary" href="#reportar">Reportar ficha</a>
+          <a class="btn secondary" href="#resultados">Volver a resultados</a>
+        </div>
+      </article>
+    </section>
+
+    <!--
+      SCREEN #reportar. Purpose: let a logged-in neighbor flag a wrong or harmful community entry.
+      Reached from: a provider profile. Goes to #reporte-enviado after a simulated report.
+      SPEC: reports create a private admin ticket; they do not automatically remove or down-rank a profile.
+      ASSUMPTION: a Google-authenticated report reduces anonymous abuse; this prototype simulates login only.
+    -->
+    <section id="reportar" class="screen" hidden aria-labelledby="report-h">
+      <div class="card">
+        <p class="eyebrow">Moderación comunitaria</p>
+        <h1 id="report-h" tabindex="-1">Reportar una ficha</h1>
+        <p id="report-profile-name" class="muted">Ficha seleccionada</p>
+        <form id="report-form" novalidate>
+          <label for="report-reason">¿Qué querés reportar?</label>
+          <select id="report-reason" name="report-reason">
+            <option value="">Elegí un motivo</option>
+            <option>Teléfono o dato incorrecto</option>
+            <option>Información desactualizada</option>
+            <option>Mala experiencia</option>
+            <option>Comportamiento inadecuado</option>
+            <option>Otro</option>
+          </select>
+          <label for="report-details">Detalle para el administrador</label>
+          <textarea id="report-details" name="report-details" placeholder="Contá lo necesario para revisar el reporte."></textarea>
+          <p id="report-error" class="error" hidden>Elegí un motivo para enviar el reporte.</p>
+          <!-- SPEC: report content is private to the moderation queue; it does not alter the public profile until reviewed. -->
+          <button class="btn" type="submit">Enviar reporte</button>
+        </form>
+      </div>
+    </section>
+
+    <!--
+      SCREEN #reporte-enviado. Purpose: confirm a report was queued for one administrator.
+      Reached from: #reportar. The profile remains visible until an administrator reviews it.
+    -->
+    <section id="reporte-enviado" class="screen" hidden aria-labelledby="report-sent-h">
+      <div class="card">
+        <p class="eyebrow">Reporte recibido</p>
+        <h1 id="report-sent-h" tabindex="-1">Se envió para revisión</h1>
+        <p id="report-sent-copy">Se creó una alerta para el administrador. La ficha no se quita automáticamente.</p>
+        <a class="btn" href="#buscar">Volver a buscar</a>
+      </div>
+    </section>
+
+    <!--
+      SCREEN #sin-resultados. Purpose: honest empty state for an unseeded category.
+      Reached from: #buscar for any category without a sample entry. Goes to #sugerir or #buscar.
+      SPEC: an empty category must not be presented as proof that no provider exists in the neighborhood.
+    -->
+    <section id="sin-resultados" class="screen" hidden aria-labelledby="vacio-h">
+      <div class="card">
+        <p class="eyebrow">Todavía no hay fichas cargadas para este rubro</p>
+        <h1 id="vacio-h" tabindex="-1">No encontramos opciones en esta búsqueda</h1>
+        <p>No significa que no haya profesionales. Podés sugerir uno o volver a buscar otra categoría.</p>
+        <!-- SPEC: preserve a recovery path from empty results to contribution or another search. -->
+        <div class="actions"><a class="btn" href="#acceso-google">Agregar profesional</a><a class="btn secondary" href="#buscar">Volver</a></div>
+      </div>
+    </section>
+
+    <!--
+      SCREEN #acceso-google. Purpose: gate contributions behind Google identity; search remains open.
+      Reached from: Add a professional actions. Goes to #sugerir after a simulated sign-in.
+      ASSUMPTION: Google account identity is enough for initial contributor traceability, not proof of residency.
+      SAMPLE: this is a mock sign-in only; no OAuth, account or email is contacted or stored.
+    -->
+    <section id="acceso-google" class="screen" hidden aria-labelledby="google-h">
+      <div class="card">
+        <p class="eyebrow">Aporte vecinal</p>
+        <h1 id="google-h" tabindex="-1">Iniciá sesión para agregar un profesional</h1>
+        <p>La cuenta se usa para registrar quién hizo el aporte. Tu nombre no se muestra públicamente salvo que lo elijas.</p>
+        <div class="notice">Simulación: este prototipo no se conecta a Google. En el producto real, Google login identifica la cuenta, no verifica por sí solo que vivas en Los Sauces.</div>
+        <!-- SPEC: in the live product, require Google authentication only for creating or reporting entries; browsing stays open. -->
+        <button class="btn" id="google-demo-login" type="button">Continuar con Google (demo)</button>
+        <a class="btn secondary" href="#buscar">Volver a buscar</a>
+      </div>
+    </section>
+
+    <!--
+      SCREEN #sugerir. Purpose: let a Google-authenticated neighbor add a community-sourced profile.
+      Reached from: #acceso-google. Goes to #duplicado, #error-sugerencia or #sugerencia-enviada.
+      SPEC: after phone-sharing attestation and duplicate lookup, a new entry publishes immediately as community-submitted and unverified by OFIDI.
+      SPEC: submitter identity stays private by default; public attribution requires opt-in. The professional needs no account or prior approval.
+      ASSUMPTION: Google identity supports internal traceability but does not establish that the user lives in Los Sauces.
+    -->
+    <section id="sugerir" class="screen" hidden aria-labelledby="sugerir-h">
+      <div class="screen-heading">
+        <p class="eyebrow">Aporte del barrio</p>
+        <h1 id="sugerir-h" tabindex="-1">Agregar un profesional al directorio</h1>
+        <p class="muted">Alta comunitaria inmediata: queda marcada como aporte vecinal no verificado. El profesional no necesita cuenta ni aprobarla.</p>
+      </div>
+      <div class="card">
+        <!-- SPEC: the live system records the Google account privately; public attribution is optional. This demo uses a mock identity. -->
+        <form id="suggest-form" novalidate>
+          <p id="contributor-status" class="notice">Sesión de ejemplo: Vecino de Los Sauces (Google login simulado).</p>
+          <div class="check-row">
+            <input id="show-recommender" name="show-recommender" type="checkbox">
+            <label for="show-recommender">Quiero que mi nombre aparezca junto a la recomendación</label>
+          </div>
+          <label for="provider-name">Nombre del profesional o cómo lo conocen</label>
+          <!-- SAMPLE: professional identity is supplied by the recommender and is not independently verified in this demo. -->
+          <input id="provider-name" name="provider-name" autocomplete="name" placeholder="Ej.: nombre o nombre del negocio">
+          <label for="provider-phone">Celular del profesional</label>
+          <!-- SPEC: normalize the number before lookup; in this demo enter the complete Argentina mobile format including +54 9. -->
+          <input id="provider-phone" name="provider-phone" type="tel" inputmode="tel" placeholder="+54 9 221 000-0000">
+          <div class="check-row">
+            <input id="can-share-phone" name="can-share-phone" type="checkbox">
+            <label for="can-share-phone">Confirmo que puedo compartir este número en el directorio</label>
+          </div>
+          <label for="provider-service">Oficio o servicio</label>
+          <select id="provider-service" name="provider-service">
+            <option value="">Elegí un rubro</option>
+            <option value="jardineria">Jardinería, poda o corte de pasto</option>
+            <option value="cerrajeria">Cerrajería</option>
+            <option value="electricidad">Electricidad</option>
+            <option value="bombas">Bombas de agua</option>
+            <option value="plomeria-piletas">Plomería y piletas</option>
+            <option value="volquetes">Volquetes</option>
+            <option value="atmosfericos">Camión atmosférico</option>
+            <option value="contenedores">Contenedores</option>
+            <option value="carwash">Car wash</option>
+            <option value="otro">Otro</option>
+          </select>
+          <label for="service-area">Zona que cubre, si la sabés</label>
+          <input id="service-area" name="service-area" placeholder="Ej.: Los Sauces, Gorina">
+          <label for="recommendation">¿Por qué lo recomendás?</label>
+          <textarea id="recommendation" name="recommendation" placeholder="Contá brevemente tu experiencia o de dónde surge la recomendación."></textarea>
+          <p id="suggest-error" class="error" hidden>Completá profesional, celular, rubro, motivo y confirmación para compartirlo.</p>
+          <!-- SPEC: in the live product, a new community entry is published immediately as unverified. This prototype simulates it in memory only. -->
+          <button class="btn" type="submit">Publicar aporte</button>
+        </form>
+        <p class="notice warning">La ficha queda visible como “Aporte vecinal, no verificado por OFIDI”. No requiere cuenta ni aprobación del profesional; el administrador actúa solo ante reportes.</p>
+        <p class="muted">El teléfono se normaliza para detectar duplicados. Si ya existe, se agrega la recomendación a esa ficha; no se crea otra.</p>
+      </div>
+    </section>
+
+    <!--
+      SCREEN #error-sugerencia. Purpose: show the primary form error and offer recovery.
+      Reached from: #sugerir when required demo fields are missing. Goes back to #sugerir.
+      SPEC: explain the missing minimum data without losing the user's place.
+    -->
+    <section id="error-sugerencia" class="screen" hidden aria-labelledby="error-h">
+      <div class="card">
+        <p class="eyebrow">Falta información</p>
+        <h1 id="error-h" tabindex="-1">Faltan datos para publicar el aporte</h1>
+        <p>Completá nombre del profesional, celular, rubro, motivo y la confirmación para compartir el número.</p>
+        <!-- SPEC: return to the form; the simulated Google session remains active in this prototype. -->
+        <a class="btn" href="#sugerir">Volver al formulario</a>
+      </div>
+    </section>
+
+    <!--
+      SCREEN #duplicado. Purpose: prevent a second provider card when a normalized phone already exists.
+      Reached from: #sugerir. The resident can attach the reason to the canonical profile instead.
+      SPEC: exact phone match routes to an existing profile; no duplicate is created.
+    -->
+    <section id="duplicado" class="screen" hidden aria-labelledby="duplicado-h">
+      <div class="card">
+        <p class="eyebrow">Coincidencia por celular</p>
+        <h1 id="duplicado-h" tabindex="-1">Este profesional ya está en el directorio</h1>
+        <p id="duplicate-summary">La sugerencia coincide con un número existente. Se conserva una sola ficha.</p>
+        <p>Podés agregar el motivo de recomendación a la ficha existente; no se crea otra persona.</p>
+        <!-- SPEC: attach the contributor's reason to the matching canonical profile. -->
+        <button class="btn" id="attach-duplicate-recommendation" type="button">Agregar recomendación a esa ficha</button>
+        <a class="btn secondary" href="#sugerir">Volver al formulario</a>
+      </div>
+    </section>
+
+    <!--
+      SCREEN #sugerencia-enviada. Purpose: show the immediate community-submitted result.
+      Reached from: a new phone or an existing phone with an additional recommendation.
+      SPEC: new cards publish immediately with an "unverified community contribution" label; admin action begins only from a report.
+    -->
+    <section id="sugerencia-enviada" class="screen" hidden aria-labelledby="enviada-h">
+      <div class="card">
+        <p class="eyebrow">Aporte del barrio</p>
+        <h1 id="enviada-h" tabindex="-1">Aporte publicado</h1>
+        <p id="suggestion-result">La ficha queda visible como aporte vecinal, no verificado por OFIDI.</p>
+        <p id="recommender-visibility" class="notice">Tu identidad queda registrada en privado; tu nombre público es opcional.</p>
+        <!-- SPEC: allow the neighbor to search after adding a community entry. -->
+        <a class="btn" href="#buscar">Volver a buscar</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Prototipo de descubrimiento para Los Sauces. Incluye datos aportados para la prueba; cobertura y vigencia deben confirmarse antes de un lanzamiento amplio.
+  </footer>
+
+  <script>
+    // SPEC: this client-side router only switches screens; it has no backend, analytics, auth or persistent storage.
+    (function () {
+      // SOURCE: details below were supplied by the project owner for the test demo.
+      // SPEC: one canonical profile may have search aliases; phone normalization is checked privately before publication.
+      // SOURCE: phone numbers were supplied in public-profile drafts for this pilot; confirm provider permission before external distribution.
+      // ASSUMPTION: similarly named contacts with different normalized phones require manual review, not automatic merging.
+      var providers = [
+        {
+          id: 'teofilo-modesto',
+          name: 'Teófilo Modesto',
+          searchNames: ['Teófilo Modesto', 'Teófilo', 'Modesto', 'Modesto Viejo'],
+          displayAliases: 'Modesto (misma ficha)',
+          category: 'jardineria',
+          service: 'Jardinero; tareas específicas por confirmar',
+          phoneDisplay: '+54 9 221 536-9137',
+          whatsAppNumber: '5492215369137',
+          coverage: 'Gorina y City Bell; cobertura en Los Sauces por confirmar',
+          availability: 'Todos los días (informado en octubre de 2026; revalidar)',
+          reference: 'Martín: muy recomendable. Experiencia indicada como comprobada por el responsable del proyecto.',
+          reviews: 'Sin reseñas de trabajos registradas'
+        },
+        {
+          id: 'leo-gisbert',
+          name: 'Leo Gisbert',
+          searchNames: ['Leo Gisbert'],
+          displayAliases: 'No informados',
+          category: 'bombas',
+          service: 'Arregla bombas',
+          phoneDisplay: '+54 9 221 481-7732',
+          whatsAppNumber: '5492214817732',
+          coverage: 'City Bell (Savoia); cobertura en Los Sauces por confirmar',
+          availability: 'Lunes a viernes; consultar (informado en octubre de 2026; revalidar)',
+          reference: 'Martín: muy recomendable (referencia aportada).',
+          reviews: 'Sin reseñas de trabajos registradas'
+        },
+        {
+          id: 'fernando-plomeria-piletas',
+          name: 'Fernando',
+          searchNames: ['Fernando'],
+          displayAliases: 'No informados',
+          category: 'plomeria-piletas',
+          service: 'Plomero y piletero',
+          phoneDisplay: '+54 9 221 454-1098',
+          whatsAppNumber: '5492214541098',
+          coverage: 'City Bell y Gorina; cobertura en Los Sauces por confirmar',
+          availability: 'Lunes a viernes; consultar (informado en octubre de 2026; revalidar)',
+          reference: 'Martín: muy recomendable (referencia aportada).',
+          reviews: 'Sin reseñas de trabajos registradas'
+        }
+      ];
+      var selectedProfile = providers[0];
+      var demoGoogleUser = null;
+      var duplicateProvider = null;
+      var pendingSuggestion = null;
+      var screens = document.querySelectorAll('.screen');
+      var links = document.querySelectorAll('nav a');
+
+      function normalizeText(value) {
+        return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+      }
+
+      // SPEC: prototype normalization handles common La Plata mobile formats; production must use a tested phone parser.
+      function normalizePhone(value) {
+        var digits = value.replace(/\D/g, '');
+        if (digits.indexOf('00') === 0) digits = digits.slice(2);
+        if (digits.indexOf('549') === 0) return digits;
+        if (digits.indexOf('54') === 0) digits = digits.slice(2);
+        if (digits.indexOf('0') === 0) digits = digits.slice(1);
+        if (digits.indexOf('22115') === 0) digits = '221' + digits.slice(5);
+        if (digits.indexOf('9') === 0) digits = digits.slice(1);
+        return digits.indexOf('549') === 0 ? digits : '549' + digits;
+      }
+
+      function renderProfile() {
+        var profile = selectedProfile;
+        document.getElementById('perfil-h').textContent = profile.name;
+        document.getElementById('profile-summary').textContent = 'Datos aportados para la prueba; confirmar vigencia y permiso antes de publicar.';
+        document.getElementById('profile-service').textContent = profile.service;
+        document.getElementById('profile-coverage').textContent = profile.coverage;
+        document.getElementById('profile-availability').textContent = profile.availability;
+        document.getElementById('profile-phone').textContent = profile.phoneDisplay;
+        document.getElementById('contact-link').href = 'https://wa.me/' + profile.whatsAppNumber;
+        document.getElementById('profile-aliases').textContent = profile.displayAliases;
+        document.getElementById('profile-reference').textContent = profile.reference;
+        document.getElementById('profile-reviews').textContent = profile.reviews;
+        document.getElementById('report-profile-name').textContent = 'Ficha seleccionada: ' + profile.name;
+      }
+
+      function renderResults(category, query) {
+        var normalizedQuery = normalizeText(query);
+        var results = providers.filter(function (provider) {
+          var categoryMatches = provider.category === category;
+          var nameMatches = !normalizedQuery || provider.searchNames.some(function (name) {
+            return normalizeText(name).indexOf(normalizedQuery) !== -1;
+          });
+          return categoryMatches && nameMatches;
+        });
+        var labels = {
+          jardineria: 'Jardinería en Los Sauces',
+          bombas: 'Reparación de bombas',
+          'plomeria-piletas': 'Plomería y piletas en Los Sauces'
+        };
+        document.getElementById('resultados-h').textContent = labels[category] || 'Resultados en Los Sauces';
+        document.getElementById('results-summary').textContent = results.length + (results.length === 1 ? ' ficha para revisar' : ' fichas para revisar') + '. Datos y cobertura pendientes de revalidar.';
+        var list = document.getElementById('results-list');
+        list.replaceChildren();
+        results.forEach(function (provider) {
+          var article = document.createElement('article');
+          article.className = 'card stack';
+          var status = document.createElement('div');
+          status.className = 'actions';
+          var tag = document.createElement('span');
+          tag.className = 'pill';
+          tag.textContent = 'Ficha aportada; revalidar';
+          status.appendChild(tag);
+          var heading = document.createElement('h2');
+          heading.textContent = provider.name;
+          var service = document.createElement('p');
+          service.textContent = provider.service;
+          var area = document.createElement('p');
+          area.className = 'muted';
+          area.textContent = provider.coverage + ' · ' + provider.availability;
+          var reference = document.createElement('p');
+          reference.className = 'muted';
+          reference.textContent = provider.reference;
+          var button = document.createElement('button');
+          button.className = 'btn';
+          button.type = 'button';
+          button.textContent = 'Ver ficha';
+          button.setAttribute('data-open-profile', provider.id);
+          button.addEventListener('click', function () {
+            selectedProfile = provider;
+            renderProfile();
+            location.hash = '#perfil';
+          });
+          article.append(status, heading, service, area, reference, button);
+          list.appendChild(article);
+        });
+        return results.length;
+      }
+
+      function route() {
+        var id = location.hash.slice(1) || 'buscar';
+        if ((id === 'sugerir' || id === 'duplicado' || id === 'sugerencia-enviada' || id === 'reportar' || id === 'reporte-enviado') && !demoGoogleUser) {
+          location.hash = '#acceso-google';
+          return;
+        }
+        var active = null;
+        screens.forEach(function (screen) {
+          var shown = screen.id === id;
+          screen.hidden = !shown;
+          if (shown) active = screen;
+        });
+        links.forEach(function (link) {
+          if (link.getAttribute('href') === '#' + id) link.setAttribute('aria-current', 'page');
+          else link.removeAttribute('aria-current');
+        });
+        if (active) { var heading = active.querySelector('h1'); if (heading) heading.focus(); }
+      }
+      window.addEventListener('hashchange', route);
+      route();
+
+      // SAMPLE: simulate Google-authenticated contributor for this prototype; no real OAuth is performed.
+      document.getElementById('google-demo-login').addEventListener('click', function () {
+        demoGoogleUser = { name: 'Vecino de prueba', email: 'vecino.demo@los-sauces.test' };
+        document.getElementById('contributor-status').textContent = 'Sesión simulada de Google: ' + demoGoogleUser.email + ' (uso interno).';
+        location.hash = '#sugerir';
+      });
+
+      // SPEC: search includes canonical names and aliases. The real product normalizes phones and reviews possible matches before publication.
+      document.getElementById('search-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        var category = document.getElementById('service').value;
+        var query = document.getElementById('name-query').value;
+        var count = renderResults(category, query);
+        location.hash = count ? '#resultados' : '#sin-resultados';
+      });
+
+      // SPEC: Contactar opens the selected professional's WhatsApp. A production backend may record this click only.
+      // ASSUMPTION: opening WhatsApp is the pilot's measurable signal; it does not prove a message or completed job.
+
+      // SPEC: the demo form validates a minimum nomination and routes to an in-memory confirmation only.
+      document.getElementById('suggest-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        var recommenderName = demoGoogleUser ? demoGoogleUser.name : '';
+        var name = document.getElementById('provider-name').value.trim();
+        var service = document.getElementById('provider-service').value;
+        var rawPhone = document.getElementById('provider-phone').value.trim();
+        var phone = normalizePhone(rawPhone);
+        var area = document.getElementById('service-area').value.trim();
+        var reason = document.getElementById('recommendation').value.trim();
+        var canSharePhone = document.getElementById('can-share-phone').checked;
+        var error = document.getElementById('suggest-error');
+        if (!recommenderName || !name || !rawPhone || phone.length < 12 || !service || !reason || !canSharePhone) {
+          error.hidden = false;
+          location.hash = '#error-sugerencia';
+          return;
+        }
+        error.hidden = true;
+        pendingSuggestion = {name:name,phone:phone,phoneDisplay:rawPhone,category:service,categoryLabel:document.getElementById('provider-service').selectedOptions[0]?.textContent || service,area:area,reason:reason,recommender:recommenderName,publicName:document.getElementById('show-recommender').checked};
+        duplicateProvider = providers.find(function (provider) { return normalizePhone(provider.whatsAppNumber) === phone; }) || null;
+        if (duplicateProvider) {
+          document.getElementById('duplicate-summary').textContent = 'El celular coincide con ' + duplicateProvider.name + '. Tu motivo se agrega a esa ficha; no se crea otra.';
+          location.hash = '#duplicado';
+          return;
+        }
+        var publicSource = pendingSuggestion.publicName ? 'Aporte de ' + demoGoogleUser.name + ': ' : 'Aporte vecinal, autor privado: ';
+        var newProvider = {
+          id: 'community-' + Date.now(),
+          name: name,
+          searchNames: [name],
+          displayAliases: 'No informados',
+          category: service,
+          service: pendingSuggestion.categoryLabel + ': ' + reason,
+          phoneDisplay: rawPhone,
+          whatsAppNumber: phone,
+          coverage: area || 'Zona por confirmar',
+          availability: 'A consultar (aporte vecinal)',
+          reference: publicSource + reason + ' (aporte vecinal, no verificado por OFIDI)',
+          reviews: 'Sin reseñas registradas',
+          communityReported: true
+        };
+        providers.push(newProvider);
+        document.getElementById('enviada-h').textContent = 'Ficha publicada como aporte vecinal';
+        document.getElementById('suggestion-result').textContent = 'La ficha de ' + name + ' aparece como aporte vecinal no verificado. En esta demo solo se conserva en memoria hasta recargar.';
+        document.getElementById('recommender-visibility').textContent = pendingSuggestion.publicName ? 'Elegiste mostrar tu nombre como recomendador: ' + demoGoogleUser.name + '.' : 'Tu identidad queda registrada en privado y no se muestra públicamente.';
+        // SAMPLE: no database, OAuth token, admin ticket, or persistent record is created in this prototype.
+        location.hash = '#sugerencia-enviada';
+      });
+
+      // SPEC: a duplicate contribution adds context to the existing canonical profile, never a second entry.
+      document.getElementById('attach-duplicate-recommendation').addEventListener('click', function () {
+        if (!duplicateProvider || !pendingSuggestion) return;
+        duplicateProvider.recommendationCount = (duplicateProvider.recommendationCount || 0) + 1;
+        document.getElementById('enviada-h').textContent = 'Recomendación agregada';
+        document.getElementById('suggestion-result').textContent = 'Tu motivo se agregó a la ficha de ' + duplicateProvider.name + '. No se creó un duplicado.';
+        document.getElementById('recommender-visibility').textContent = pendingSuggestion.publicName ? 'Elegiste mostrar tu nombre como recomendador: ' + demoGoogleUser.name + '.' : 'Tu identidad queda registrada en privado y no se muestra públicamente.';
+        location.hash = '#sugerencia-enviada';
+      });
+
+      // SPEC: a report creates an admin ticket; the profile is not automatically removed.
+      document.getElementById('report-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        var reason = document.getElementById('report-reason').value;
+        var error = document.getElementById('report-error');
+        if (!reason) { error.hidden = false; return; }
+        error.hidden = true;
+        document.getElementById('report-sent-copy').textContent = 'Se creó una alerta por “' + reason + '” sobre ' + selectedProfile.name + '. El administrador decidiría si corresponde actualizar o desactivar la ficha.';
+        location.hash = '#reporte-enviado';
+      });
+    })();
+  </script>
+</body>
+</html>

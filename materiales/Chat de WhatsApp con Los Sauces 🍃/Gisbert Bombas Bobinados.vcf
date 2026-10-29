@@ -1,0 +1,12 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Bobinados;Gisbert;Bombas;;
+FN:Gisbert Bombas Bobinados
+item1.TEL:+54 9 221 480-3809
+item1.X-ABLabel:Fax personal
+item2.TEL;waid=5492214817732:+54 9 221 481-7732
+item2.X-ABLabel:Casa
+item3.ADR:;;8 Nro 1239 y 7bis 475 e;City Bell;;;Argentina
+item3.X-ABADR:ar
+item3.X-ABLabel:Casa
+END:VCARD

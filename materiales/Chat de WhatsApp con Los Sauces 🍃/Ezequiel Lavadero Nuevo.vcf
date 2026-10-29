@@ -1,0 +1,9 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Nuevo;Ezequiel;Lavadero;;
+FN:Ezequiel Lavadero Nuevo
+item1.TEL;waid=5492215655277:+54 9 221 565-5277
+item1.X-ABLabel:Móvil
+X-WA-BIZ-DESCRIPTION:Lavadero de autos
+X-WA-BIZ-NAME:Ezequiel Lavadero Nuevo
+END:VCARD

@@ -1,0 +1,7 @@
+BEGIN:VCARD
+VERSION:3.0
+N:parquero;juan;;;
+FN:juan parquero
+item1.TEL;waid=5492215224045:+54 9 221 522-4045
+item1.X-ABLabel:Otro
+END:VCARD

@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:3.0
+N:salteñas;Empanadas;;;
+FN:Empanadas salteñas
+item1.TEL;waid=5492213048489:+54 9 221 304-8489
+item1.X-ABLabel:Móvil
+item2.ADR:;;1900 133 Numero 2176nEntre 510 Y 511;La Plata;;;Argentina
+item2.X-ABADR:ar
+item2.X-ABLabel:Casa
+END:VCARD

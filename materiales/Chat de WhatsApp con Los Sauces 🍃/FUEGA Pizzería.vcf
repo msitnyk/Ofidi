@@ -1,0 +1,9 @@
+BEGIN:VCARD
+VERSION:3.0
+N:;FUEGA Pizzería;;;
+FN:FUEGA Pizzería
+X-WA-BIZ-NAME:FUEGA Pizzería
+X-WA-BIZ-DESCRIPTION:Pizzas, Empanadas y Focaccias al horno de leña
+ORG:FUEGA Pizzería;
+TEL;type=CELL;type=VOICE;waid=5492214386733:+54 9 2214 38-6733
+END:VCARD
